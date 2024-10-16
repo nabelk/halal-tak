@@ -1,0 +1,30 @@
+body {
+    overflow-y: auto;
+}
+
+#root {
+    margin: 0 auto;
+    text-align: center;
+    height: 100dvh;
+    width: 100dvw;
+    display: grid;
+    grid-template-rows: 92% auto;
+}
+
+#root > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-bottom: 5%;
+}
+
+@media (max-width: 350px) {
+    html {
+        height: 100%;
+    }
+    #root {
+        height: 100%;
+    }
+}
