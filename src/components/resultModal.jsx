@@ -121,7 +121,7 @@ export function ResultModal({
                             </svg>
                             <span className='sr-only'>Close modal</span>
                         </button>
-                        <div className='p-[2.5rem] text-center'>
+                        <div className='px-[1.8rem] py-[2.5rem] md:px-[2.5rem] md:py[2.5rem] text-center'>
                             <div className='flex justify-center'>
                                 <img
                                     src={`/logos/${choosenDiningToDisplay && Logo}`}
