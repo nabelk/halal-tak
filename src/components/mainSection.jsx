@@ -1,7 +1,10 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 export function MainSection(props) {
+    const [suggestionMaxHeight, setSuggestionMaxHeight] = useState('auto');
+    const suggestionRefs = useRef([]);
+    const inputRef = useRef(null);
     const {
         handleSearchSubmit,
         searchTerm,
@@ -12,8 +15,7 @@ export function MainSection(props) {
         handleSelect,
     } = props;
 
-    const suggestionRefs = useRef([]);
-
+    // To make arrown dowm & up key working properly when scrolling in search suggestion list
     useEffect(() => {
         if (suggestionRefs.current[selectedIndex]) {
             suggestionRefs.current[selectedIndex].scrollIntoView({
@@ -22,6 +24,27 @@ export function MainSection(props) {
             });
         }
     }, [selectedIndex]);
+
+    // To get how many space left between search input & footer to set search suggestion list height
+    useEffect(() => {
+        const mainSectionParent = document.querySelector('#root > div:first-child');
+
+        const calculateMaxHeight = () => {
+            if (inputRef.current && mainSectionParent) {
+                const inputBottom = inputRef.current.getBoundingClientRect().bottom;
+                const mainSectionBottom = mainSectionParent.getBoundingClientRect().bottom;
+                const availableHeight = mainSectionBottom - inputBottom - 10;
+                setSuggestionMaxHeight(`${availableHeight}px`);
+            }
+        };
+
+        calculateMaxHeight();
+        window.addEventListener('resize', calculateMaxHeight);
+
+        return () => {
+            window.removeEventListener('resize', calculateMaxHeight);
+        };
+    }, []);
 
     return (
         <section className=' p-3 md:py-10 sm:p-5 font-mono dark:bg-gray-800 dark:text-white'>
@@ -69,6 +92,7 @@ export function MainSection(props) {
 
                                 <input
                                     type='search'
+                                    ref={inputRef}
                                     autoComplete='off'
                                     id='search'
                                     className='block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500'
@@ -81,7 +105,10 @@ export function MainSection(props) {
                             </div>
 
                             {searchSuggestion.length > 0 && (
-                                <ul className='border border-gray-300 mt-2 max-h-60 overflow-y-scroll absolute w-full'>
+                                <ul
+                                    style={{ maxHeight: `${suggestionMaxHeight}` }}
+                                    className='border border-gray-300 mt-2 max-h-60 overflow-y-scroll absolute w-full'
+                                >
                                     {searchSuggestion.map((suggestion, index) => {
                                         return (
                                             <li
