@@ -1,5 +1,5 @@
 body {
-    overflow-y: auto;
+    overflow: hidden !important;
 }
 
 #root {
@@ -9,6 +9,8 @@ body {
     width: 100dvw;
     display: grid;
     grid-template-rows: 92% auto;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 }
 
 #root > div {
@@ -16,7 +18,8 @@ body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    overflow-y: auto;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     padding-bottom: 5%;
 }
 
