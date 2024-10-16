@@ -3,6 +3,7 @@ import { MainSection } from './components/mainSection';
 import { ResultModal } from './components/resultModal';
 import { DarkMode } from './components/darkMode';
 import { Footer } from './components/footer';
+import { TCModal } from './components/tcModal';
 import { fetchData } from './utils/api';
 import { convertJsonSheet } from './utils/sheetJsonUtils';
 import { normalizeString } from './utils/normalizeStringUtils';
@@ -15,6 +16,7 @@ function App() {
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [searchResult, setSearchResult] = useState({});
     const [openModal, setOpenModal] = useState(false);
+    const [openTCModal, setOpenTCMOdal] = useState(false);
 
     useEffect(() => {
         fetchData(import.meta.env.VITE_API_URL)
@@ -23,6 +25,7 @@ function App() {
     }, []);
 
     const handleModalVisibility = (bool) => setOpenModal(bool);
+    const handleTCModalVIsibility = (bool) => setOpenTCMOdal(bool);
 
     const handleSearchOnChange = (e) => {
         const searchInput = e.target.value;
@@ -101,8 +104,12 @@ function App() {
                     selectedIndex={selectedIndex}
                     searchSuggestion={searchSuggestion}
                 ></MainSection>
+                <TCModal
+                    tcModalCurState={openTCModal}
+                    handleTCModalVIsibility={handleTCModalVIsibility}
+                ></TCModal>
             </div>
-            <Footer></Footer>
+            <Footer handleTCModalVIsibility={handleTCModalVIsibility}></Footer>
         </>
     );
 }
