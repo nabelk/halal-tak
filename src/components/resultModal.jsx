@@ -1,6 +1,16 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+const logos = Object.fromEntries(
+    Object.entries(
+        import.meta.glob('@assets/logos/*.{png,jpg,jpeg,PNG,JPEG}', {
+            eager: true,
+            query: '?url',
+            import: 'default',
+        }),
+    ).map(([key, value]) => [key.split('/').pop(), value]),
+);
+
 export function ResultModal({
     choosenDiningToDisplay,
     openModalCurState,
@@ -124,7 +134,7 @@ export function ResultModal({
                         <div className='px-[1.8rem] py-[2.5rem] md:px-[2.5rem] md:py[2.5rem] text-center'>
                             <div className='flex justify-center'>
                                 <img
-                                    src={`/logos/${choosenDiningToDisplay && Logo}`}
+                                    src={choosenDiningToDisplay && logos[Logo]}
                                     alt={`${Name} Logo`}
                                     className='img-fluid mb-4'
                                     style={{ maxWidth: '150px' }}
