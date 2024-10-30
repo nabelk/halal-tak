@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-const logos = Object.fromEntries(
+const allLogos = Object.fromEntries(
     Object.entries(
         import.meta.glob('@assets/logos/*.{png,jpg,jpeg,PNG,JPEG}', {
             eager: true,
@@ -17,6 +17,8 @@ export function ResultModal({
     onClickHandleModalVisibility,
     searchTerm,
 }) {
+    const [logos, setLogos] = useState(allLogos);
+
     useEffect(() => {
         document.getElementById('root').className = openModalCurState ? 'overflow-hidden' : '';
     }, [openModalCurState]);
@@ -135,6 +137,7 @@ export function ResultModal({
                             <div className='flex justify-center'>
                                 <img
                                     src={choosenDiningToDisplay && logos[Logo]}
+                                    loading='lazy'
                                     alt={`${Name} Logo`}
                                     className='img-fluid mb-4'
                                     style={{ maxWidth: '150px' }}
@@ -162,6 +165,7 @@ export function ResultModal({
 
                                     {Premise === 'Yes' ? (
                                         <img
+                                            loading='lazy'
                                             src='/halal-logo.png'
                                             alt='Halal Certification'
                                             className='img-fluid'
@@ -187,6 +191,7 @@ export function ResultModal({
 
                                     {Central_Kitchen === 'Yes' ? (
                                         <img
+                                            loading='lazy'
                                             src='/halal-logo.png'
                                             alt='Halal Certification'
                                             className='img-fluid'
