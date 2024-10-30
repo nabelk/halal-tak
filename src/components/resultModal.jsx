@@ -137,7 +137,6 @@ export function ResultModal({
                             <div className='flex justify-center'>
                                 <img
                                     src={choosenDiningToDisplay && logos[Logo]}
-                                    loading='lazy'
                                     alt={`${Name} Logo`}
                                     className='img-fluid mb-4'
                                     style={{ maxWidth: '150px' }}
@@ -165,7 +164,6 @@ export function ResultModal({
 
                                     {Premise === 'Yes' ? (
                                         <img
-                                            loading='lazy'
                                             src='/halal-logo.png'
                                             alt='Halal Certification'
                                             className='img-fluid'
@@ -191,7 +189,6 @@ export function ResultModal({
 
                                     {Central_Kitchen === 'Yes' ? (
                                         <img
-                                            loading='lazy'
                                             src='/halal-logo.png'
                                             alt='Halal Certification'
                                             className='img-fluid'
