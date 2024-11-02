@@ -7,6 +7,8 @@ import { TCModal } from '../components/tcModal';
 import { fetchData } from '../utils/api';
 import { convertJsonSheet } from '../utils/sheetJsonUtils';
 import { normalizeString } from '../utils/normalizeStringUtils';
+import { Navigate } from 'react-router-dom';
+import Error500 from './500';
 
 function Homepage() {
     const [diningList, setDiningList] = useState([]);
@@ -18,8 +20,6 @@ function Homepage() {
     const [openTCModal, setOpenTCMOdal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-
-    if (error) throw new Error('Data fetch failed');
 
     useEffect(() => {
         fetchData(import.meta.env.VITE_API_URL)
@@ -94,6 +94,13 @@ function Homepage() {
         setOpenModal(!false);
         if (findDining) setSearchTerm('');
     };
+
+    if (error)
+        return (
+            <>
+                <Error500 isRouter={true} />
+            </>
+        );
 
     return (
         <>

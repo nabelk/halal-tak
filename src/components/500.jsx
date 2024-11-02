@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-
 function Error500({ isRouter }) {
     return (
         <>
@@ -17,12 +15,12 @@ function Error500({ isRouter }) {
                         </p>
 
                         {isRouter && (
-                            <Link
-                                to='/'
+                            <a
+                                href='/'
                                 className='inline-flex text-white bg-teal-600 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center my-4'
                             >
                                 Back to Halal Tak Homepage
-                            </Link>
+                            </a>
                         )}
                     </div>
                 </div>
