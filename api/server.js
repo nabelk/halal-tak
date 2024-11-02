@@ -5,8 +5,11 @@ import path from 'node:path';
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production';
+console.log(isProduction);
 const port = process.env.PORT || 5173;
 const base = process.env.BASE || '/';
+
+console.log(isProduction);
 
 // Cached production assets
 const templateHtml = isProduction ? await fs.readFile('./dist/client/index.html', 'utf-8') : '';
@@ -48,7 +51,7 @@ app.use('*', async (req, res) => {
             render = (await vite.ssrLoadModule('/src/entry-server.jsx')).render;
         } else {
             template = templateHtml;
-            render = (await import('./dist/server/entry-server.js')).render;
+            render = (await import('../dist/server/entry-server.js')).render;
         }
         const rendered = await render({ path: req.originalUrl }, ssrManifest);
         const html = template.replace(`<!--app-outlet-->`, rendered ?? '');
