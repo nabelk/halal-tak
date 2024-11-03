@@ -30,7 +30,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use('/assets', express.static(path.join(__dirname, '../dist/assets')));
 
 //security
 app.use(
@@ -45,15 +45,15 @@ app.use(
                     'https://www.googletagmanager.com/*',
                     'https://vercel.live',
                     'https://*.vercel.app',
-                    'https://halaltak.com',
-                    'https://halaltak.com/*',
+                    'https://www.halaltak.com',
+                    'https://www.halaltak.com/*',
                 ],
                 styleSrc: [
                     "'self'",
                     "'unsafe-inline'",
                     'https://cdnjs.cloudflare.com',
-                    'https://halaltak.com',
-                    'https://halaltak.com/*',
+                    'https://www.halaltak.com',
+                    'https://www.halaltak.com/*',
                 ],
                 imgSrc: ["'self'", 'data:', 'https:'],
                 connectSrc: [
