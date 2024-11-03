@@ -46,34 +46,7 @@ app.use('/dist', express.static(path.join(__dirname, '../dist'), headersStaticCo
 //security
 app.use(
     helmet({
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                scriptSrc: [
-                    "'self'",
-                    "'unsafe-inline'",
-                    'https://www.googletagmanager.com',
-                    'https://www.googletagmanager.com/*',
-                    'https://vercel.live',
-                    'https://*.vercel.app',
-                    'https://www.halaltak.com',
-                    'https://www.halaltak.com/*',
-                ],
-                styleSrc: [
-                    "'self'",
-                    "'unsafe-inline'",
-                    'https://cdnjs.cloudflare.com',
-                    'https://www.halaltak.com',
-                    'https://www.halaltak.com/*',
-                ],
-                imgSrc: ["'self'", 'data:', 'https:'],
-                connectSrc: [
-                    "'self'",
-                    isProduction ? 'wss://halaltak.com' : 'ws://localhost:24678',
-                ],
-            },
-        },
-
+        contentSecurityPolicy: false,
         crossOriginEmbedderPolicy: false,
         referrerPolicy: { policy: 'no-referrer' },
         hidePoweredBy: true,
