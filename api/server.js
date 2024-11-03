@@ -43,19 +43,6 @@ const headersStaticConfig = {
 app.use('/assets', express.static(path.join(__dirname, '../dist/assets'), headersStaticConfig));
 app.use('/dist', express.static(path.join(__dirname, '../dist'), headersStaticConfig));
 
-//security
-app.use(
-    helmet({
-        contentSecurityPolicy: false,
-        crossOriginEmbedderPolicy: false,
-        referrerPolicy: { policy: 'no-referrer' },
-        hidePoweredBy: true,
-        noSniff: true,
-        xssFilter: true,
-        frameguard: { action: 'deny' },
-    }),
-);
-
 // Cors
 const allowedOrigins = ['https://halaltak.com'];
 if (process.env.VERCEL_URL) {
