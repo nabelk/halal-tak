@@ -7,10 +7,7 @@ export function generateToken(req) {
     const nonce = crypto.randomBytes(16).toString('hex');
     const clientInfo = `${req.ip}-${req.get('User-Agent')}`;
     const data = `${nonce}-${clientInfo}`;
-    const token = crypto
-        .createHmac('sha256', process.env.VITE_JWT_SECRET)
-        .update(data)
-        .digest('hex');
+    const token = crypto.createHmac('sha256', process.env.JWT_SECRET).update(data).digest('hex');
 
     // Store the token with an expiry
     tokenStore.set(token, { used: false, expiry: Date.now() + 5 * 60 * 1000, clientInfo });

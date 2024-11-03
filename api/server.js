@@ -33,7 +33,14 @@ app.use(
         contentSecurityPolicy: {
             directives: {
                 defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com'],
+                scriptSrc: [
+                    "'self'",
+                    "'unsafe-inline'",
+                    'https://www.googletagmanager.com',
+                    'https://www.googletagmanager.com/*',
+                    'https://vercel.live',
+                    'https://*.vercel.app',
+                ],
                 styleSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'],
                 imgSrc: ["'self'", 'data:', 'https:'],
                 connectSrc: [
@@ -113,9 +120,7 @@ app.get('/api/data/:location', verifyToken, rateLimitConfig, async (req, res) =>
     };
 
     try {
-        const data = await fetchData(
-            `${process.env.VITE_URL}${location}?key=${process.env.VITE_SECRET_KEY}`,
-        );
+        const data = await fetchData(`${process.env.URL}${location}?key=${process.env.SECRET_KEY}`);
         res.json(data);
     } catch {
         res.status(500).json({ error: 'Error fetching data' });
