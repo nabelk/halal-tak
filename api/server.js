@@ -30,7 +30,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.json());
 
-app.use('/assets', express.static(path.join(__dirname, '../dist/assets')));
+const headersStaticConfig = {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    },
+};
+
+app.use('/assets', express.static(path.join(__dirname, '../dist/assets'), headersStaticConfig));
+app.use('/dist', express.static(path.join(__dirname, '../dist'), headersStaticConfig));
 
 //security
 app.use(
