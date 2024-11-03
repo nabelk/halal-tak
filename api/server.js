@@ -43,27 +43,6 @@ const headersStaticConfig = {
 app.use('/assets', express.static(path.join(__dirname, '../dist/assets'), headersStaticConfig));
 app.use('/dist', express.static(path.join(__dirname, '../dist'), headersStaticConfig));
 
-// Cors
-const allowedOrigins = ['https://halaltak.com'];
-if (process.env.VERCEL_URL) {
-    allowedOrigins.push(`https://${process.env.VERCEL_URL}`);
-}
-
-if (process.env.NODE_ENV !== 'production') {
-    allowedOrigins.push(`http://localhost:${port}`);
-}
-app.use(
-    cors({
-        origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
-    }),
-);
-
 // Add Vite or respective production middlewares
 let vite;
 if (!isProduction) {
