@@ -7,6 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { generateToken, verifyToken } from '../src/utils/token.js';
+import { fileURLToPath } from 'url';
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production';
@@ -25,7 +26,11 @@ const rateLimitConfig = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
 });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.use(express.json());
+
+app.use('/assets', express.static(path.join(__dirname, '../dist/assets')));
 
 //security
 app.use(
