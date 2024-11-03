@@ -21,16 +21,41 @@ function Homepage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    useEffect(() => {
-        fetchData(import.meta.env.VITE_API_URL)
+    const fetchData = (token) => {
+        fetch('/api/data/KLCC', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Custom-Token': token,
+            },
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('Data fetch failed');
+                }
+                return res.json();
+            })
             .then((datas) => {
-                setDiningList(convertJsonSheet(datas.data.values));
+                setDiningList(convertJsonSheet(datas));
             })
             .catch(() => {
                 setError(true);
             })
             .finally(() => {
                 setLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        fetch('/api/token', { method: 'GET' })
+            .then((res) => res.json())
+            .then((data) => {
+                const token = data.token;
+
+                return fetchData(token);
+            })
+            .catch(() => {
+                setError(true);
             });
     }, []);
 
@@ -133,17 +158,17 @@ function Homepage() {
                     choosenDiningToDisplay={searchResult}
                     searchTerm={searchTerm}
                 ></ResultModal>
-                {!loading && !error && (
-                    <MainSection
-                        handleSearchSubmit={handleSearchSubmit}
-                        handleSearchOnChange={handleSearchOnChange}
-                        handleKeyDown={handleKeyDown}
-                        handleSelect={handleSelect}
-                        searchTerm={searchTerm}
-                        selectedIndex={selectedIndex}
-                        searchSuggestion={searchSuggestion}
-                    ></MainSection>
-                )}
+                <MainSection
+                    handleSearchSubmit={handleSearchSubmit}
+                    handleSearchOnChange={handleSearchOnChange}
+                    handleKeyDown={handleKeyDown}
+                    handleSelect={handleSelect}
+                    searchTerm={searchTerm}
+                    selectedIndex={selectedIndex}
+                    searchSuggestion={searchSuggestion}
+                    isLoading={loading}
+                    isError={error}
+                ></MainSection>
                 <TCModal
                     tcModalCurState={openTCModal}
                     handleTCModalVIsibility={handleTCModalVIsibility}

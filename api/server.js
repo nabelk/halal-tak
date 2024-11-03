@@ -2,14 +2,16 @@ import 'dotenv/config';
 import fs from 'node:fs/promises';
 import express from 'express';
 import path from 'node:path';
+import axios from 'axios';
+import cors from 'cors';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+import { generateToken, verifyToken } from '../src/utils/token.js';
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production';
-console.log(isProduction);
 const port = process.env.PORT || 5173;
 const base = process.env.BASE || '/';
-
-console.log(isProduction);
 
 // Cached production assets
 const templateHtml = isProduction ? await fs.readFile('./dist/client/index.html', 'utf-8') : '';
@@ -19,6 +21,57 @@ const ssrManifest = isProduction
 
 // Create http server
 const app = express();
+const rateLimitConfig = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+});
+app.use(express.json());
+
+//security
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com'],
+                styleSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'],
+                imgSrc: ["'self'", 'data:', 'https:'],
+                connectSrc: [
+                    "'self'",
+                    isProduction ? 'wss://halaltak.com' : 'ws://localhost:24678',
+                ],
+            },
+        },
+
+        crossOriginEmbedderPolicy: false,
+        referrerPolicy: { policy: 'no-referrer' },
+        hidePoweredBy: true,
+        noSniff: true,
+        xssFilter: true,
+        frameguard: { action: 'deny' },
+    }),
+);
+
+// Cors
+const allowedOrigins = ['https://halaltak.com'];
+if (process.env.VERCEL_URL) {
+    allowedOrigins.push(`https://${process.env.VERCEL_URL}`);
+}
+
+if (process.env.NODE_ENV !== 'production') {
+    allowedOrigins.push(`http://localhost:${port}`);
+}
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+    }),
+);
 
 // Add Vite or respective production middlewares
 let vite;
@@ -36,6 +89,38 @@ if (!isProduction) {
     app.use(compression());
     app.use(base, sirv('./dist/client', { extensions: [] }));
 }
+
+// Route to generate token for fetch api
+app.get('/api/token', rateLimitConfig, (req, res) => {
+    const token = generateToken(req);
+    res.json(token);
+});
+
+// Api route for getting data
+app.get('/api/data/:location', verifyToken, rateLimitConfig, async (req, res) => {
+    const { location } = req.params;
+
+    const fetchData = async (url, delay = 1000, count = 1) => {
+        try {
+            const response = await axios(url);
+            return response.data.values;
+        } catch (err) {
+            if (count === 5) throw err;
+            console.log('Fetch failed, retrying...');
+            await new Promise((res) => setTimeout(res, delay));
+            return fetchData(url, delay, count + 1);
+        }
+    };
+
+    try {
+        const data = await fetchData(
+            `${process.env.VITE_URL}${location}?key=${process.env.VITE_SECRET_KEY}`,
+        );
+        res.json(data);
+    } catch {
+        res.status(500).json({ error: 'Error fetching data' });
+    }
+});
 
 // Serve HTML
 app.use('*', async (req, res) => {
@@ -59,12 +144,9 @@ app.use('*', async (req, res) => {
         res.status(200).setHeader('Content-Type', 'text/html').end(html);
     } catch (e) {
         vite?.ssrFixStacktrace(e);
-        console.log(e.stack);
         res.status(500).end(e.stack);
     }
 });
 
 // Start http server
-app.listen(port, () => {
-    console.log(`Server started at http://localhost:${port}`);
-});
+app.listen(port);

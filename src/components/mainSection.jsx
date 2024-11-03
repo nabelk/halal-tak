@@ -13,6 +13,8 @@ export function MainSection(props) {
         searchSuggestion,
         selectedIndex,
         handleSelect,
+        isLoading,
+        isError,
     } = props;
 
     // To make arrown dowm & up key working properly when scrolling in search suggestion list
@@ -47,7 +49,11 @@ export function MainSection(props) {
     }, []);
 
     return (
-        <section className=' p-3 md:py-10 sm:p-5 font-mono dark:bg-gray-800 dark:text-white'>
+        <section
+            className={` ${
+                !isLoading && !isError ? '' : 'hidden'
+            } p-3 md:py-10 sm:p-5 font-mono dark:bg-gray-800 dark:text-white `}
+        >
             <div className=' mx-auto max-w-screen-xl px-4 lg:px-12'>
                 <div className='h-full relative'>
                     <div
