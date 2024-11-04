@@ -137,11 +137,11 @@ export function ResultModal({
                             <span className='sr-only'>Close modal</span>
                         </button>
                         <div className='px-[1.8rem] py-[2.5rem] md:px-[2.5rem] md:py[2.5rem] text-center'>
-                            <div className='flex justify-center relative'>
+                            <div className='flex justify-center relative h-[150px]'>
                                 <img
                                     src={choosenDiningToDisplay && logos[Logo]}
                                     alt={`${Name} Logo`}
-                                    className={`img-fluid mb-4 w-[150px] h-[150px] transition-opacity duration-800 ease-out ${
+                                    className={`img-fluid mb-4 w-[150px]  transition-opacity duration-800 ease-out ${
                                         isLogoLoad ? 'opacity-100' : 'opacity-0'
                                     }`}
                                     onLoad={() => setIsLogoLoad(true)}

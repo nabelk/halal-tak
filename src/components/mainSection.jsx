@@ -112,8 +112,7 @@ export function MainSection(props) {
 
                             {searchSuggestion.length > 0 && (
                                 <ul
-                                    style={{ maxHeight: `${suggestionMaxHeight}` }}
-                                    className='border border-gray-300 mt-2 max-h-60 overflow-y-scroll absolute w-full'
+                                    className={`border border-gray-300 mt-2 max-h-60 overflow-y-scroll absolute w-full max-h-${suggestionMaxHeight}`}
                                 >
                                     {searchSuggestion.map((suggestion, index) => {
                                         return (
@@ -149,4 +148,6 @@ MainSection.propTypes = {
     selectedIndex: PropTypes.number.isRequired,
     handleSelect: PropTypes.func.isRequired,
     searchSuggestion: PropTypes.array.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    isError: PropTypes.bool.isRequired,
 };

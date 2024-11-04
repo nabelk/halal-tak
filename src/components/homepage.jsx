@@ -4,10 +4,8 @@ import { ResultModal } from '../components/resultModal';
 import { DarkMode } from '../components/darkMode';
 import { Footer } from '../components/footer';
 import { TCModal } from '../components/tcModal';
-import { fetchData } from '../utils/api';
 import { convertJsonSheet } from '../utils/sheetJsonUtils';
 import { normalizeString } from '../utils/normalizeStringUtils';
-import { Navigate } from 'react-router-dom';
 import Error500 from './500';
 import Loading from './loading';
 
