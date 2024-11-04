@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import Loading from './loading';
 
 const allLogos = Object.fromEntries(
     Object.entries(
@@ -18,8 +19,10 @@ export function ResultModal({
     searchTerm,
 }) {
     const [logos, setLogos] = useState(allLogos);
+    const [isLogoLoad, setIsLogoLoad] = useState(false);
 
     useEffect(() => {
+        setIsLogoLoad(false);
         document.getElementById('root').className = openModalCurState ? 'overflow-hidden' : '';
     }, [openModalCurState]);
 
@@ -134,13 +137,20 @@ export function ResultModal({
                             <span className='sr-only'>Close modal</span>
                         </button>
                         <div className='px-[1.8rem] py-[2.5rem] md:px-[2.5rem] md:py[2.5rem] text-center'>
-                            <div className='flex justify-center'>
+                            <div className='flex justify-center relative'>
                                 <img
                                     src={choosenDiningToDisplay && logos[Logo]}
                                     alt={`${Name} Logo`}
-                                    className='img-fluid mb-4'
-                                    style={{ maxWidth: '150px' }}
+                                    className={`img-fluid mb-4 w-[150px] h-[150px] transition-opacity duration-800 ease-out ${
+                                        isLogoLoad ? 'opacity-100' : 'opacity-0'
+                                    }`}
+                                    onLoad={() => setIsLogoLoad(true)}
                                 />
+                                {!isLogoLoad && (
+                                    <div className='absolute flex justify-center items-center'>
+                                        <Loading />
+                                    </div>
+                                )}
                             </div>
 
                             <h2 className='mt-2 font-bold'>{choosenDiningToDisplay && Name}</h2>
@@ -148,17 +158,10 @@ export function ResultModal({
 
                             <hr className='my-4 mb-6' />
 
-                            <div className='my-4 text-left mx-auto' style={{ maxWidth: '350px' }}>
+                            <div className='my-4 text-left mx-auto max-w-[350px]'>
                                 <div className='flex items-center justify-between mb-6'>
                                     <div className='flex items-center'>
-                                        <span
-                                            className='fas fa-store mr-3'
-                                            style={{
-                                                fontSize: '1em',
-                                                color: '#aec6cf',
-                                                width: '1.2rem',
-                                            }}
-                                        ></span>
+                                        <span className='fas fa-store mr-3 text-[1em] text-[#aec6cf] w-[1.2rem]'></span>
                                         <p className='ml-1 font-bold'>Premise</p>
                                     </div>
 
@@ -166,24 +169,16 @@ export function ResultModal({
                                         <img
                                             src='/halal-logo.png'
                                             alt='Halal Certification'
-                                            className='img-fluid'
-                                            style={{ maxWidth: '40px' }}
+                                            className='img-fluid max-w-[40px]'
                                         />
                                     ) : (
-                                        <p style={{ fontSize: '1em' }}>N/A</p>
+                                        <p className='text-[1em]'>N/A</p>
                                     )}
                                 </div>
 
                                 <div className='flex items-center justify-between mb-6'>
                                     <div className='flex items-center'>
-                                        <span
-                                            className='fas fa-utensils mr-3'
-                                            style={{
-                                                fontSize: '1em',
-                                                color: '#ffd1b3',
-                                                width: '1.2rem',
-                                            }}
-                                        ></span>
+                                        <span className='fas fa-utensils mr-3 text-[1em] text-[#ffd1b3] w-[1.2rem]'></span>
                                         <p className='ml-1 font-bold'>Central Kitchen</p>
                                     </div>
 
@@ -191,30 +186,19 @@ export function ResultModal({
                                         <img
                                             src='/halal-logo.png'
                                             alt='Halal Certification'
-                                            className='img-fluid'
-                                            style={{ maxWidth: '40px' }}
+                                            className='img-fluid max-w-[40px]'
                                         />
                                     ) : (
-                                        <p style={{ fontSize: '1em' }}>N/A</p>
+                                        <p className='text-[1em]'>N/A</p>
                                     )}
                                 </div>
 
                                 <div className='flex items-center justify-between mb-2'>
                                     <div className='flex items-center'>
-                                        <span
-                                            className='fas fa-users mr-3'
-                                            style={{
-                                                fontSize: '1em',
-                                                color: '#b39eb5',
-                                                width: '1.2rem',
-                                            }}
-                                        ></span>
+                                        <span className='fas fa-users mr-3 text-[1em] text-[#b39eb5] w-[1.2rem]'></span>
                                         <p className='ml-1 font-bold'>Ownership</p>
                                     </div>
-                                    <span
-                                        className='badge badge-secondary'
-                                        style={{ fontSize: '1em' }}
-                                    >
+                                    <span className='badge badge-secondary text-[1em]'>
                                         {choosenDiningToDisplay && Ownership}
                                     </span>
                                 </div>
