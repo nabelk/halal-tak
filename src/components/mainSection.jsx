@@ -50,8 +50,8 @@ export function MainSection(props) {
 
     return (
         <section
-            className={`transition-opacity duration-800 ease-out ${
-                !isLoading && !isError ? 'opacity-100' : 'opacity-0'
+            className={`${
+                !isLoading && !isError ? 'fade-in' : 'hidden'
             } p-3 md:py-10 sm:p-5 font-mono dark:bg-gray-800 dark:text-white `}
         >
             <div className=' mx-auto max-w-screen-xl px-4 lg:px-12'>
