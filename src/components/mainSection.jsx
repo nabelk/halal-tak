@@ -1,8 +1,12 @@
 import { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { ChevronDown, MapPin } from 'lucide-react';
 
 export function MainSection(props) {
     const [suggestionMaxHeight, setSuggestionMaxHeight] = useState('auto');
+    const [isLocationDropdown, setIsLocationDropdown] = useState(false);
+    const dropdownRef = useRef(null);
+    const locations = ['KLCC', 'Mid Valley'];
     const suggestionRefs = useRef([]);
     const inputRef = useRef(null);
     const {
@@ -15,6 +19,8 @@ export function MainSection(props) {
         handleSelect,
         isLoading,
         isError,
+        selectedLocation,
+        setSelectedLocation,
     } = props;
 
     // To make arrown dowm & up key working properly when scrolling in search suggestion list
@@ -48,6 +54,23 @@ export function MainSection(props) {
         };
     }, []);
 
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsLocationDropdown(false);
+            }
+        }
+
+        if (isLocationDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isLocationDropdown]);
+
+    const toggleDropdown = () => setIsLocationDropdown(!isLocationDropdown);
+
     return (
         <section
             className={`${
@@ -65,8 +88,54 @@ export function MainSection(props) {
                             Tak <br />
                         </h1>
                         <p className='text-normal text-xl md:text-2xl pt-3 md:pt-6 font-medium'>
-                            Looking for Halal dining at KLCC? Halal Tak makes it simple to find
-                            trusted, Halal-certified spots in the area.
+                            Looking for Halal dining at{' '}
+                            <span className='relative inline-block mr-1' ref={dropdownRef}>
+                                <button
+                                    onClick={toggleDropdown}
+                                    className='inline-flex items-center gap-1 text-teal-500 font-bold hover:text-teal-600 transition-colors duration-200'
+                                    aria-haspopup='listbox'
+                                    aria-expanded={isLocationDropdown}
+                                >
+                                    <span>{selectedLocation}</span>
+                                    <ChevronDown
+                                        className={`h-4 w-4 transition-transform duration-200 ${
+                                            isLocationDropdown ? 'rotate-180' : ''
+                                        }`}
+                                    />
+                                </button>
+
+                                {isLocationDropdown && (
+                                    <div className='absolute z-10 mt-1 w-64 origin-top-right rounded-lg shadow-lg  border border-gray-300  bg-gray-50 dark:bg-gray-700 dark:border-gray-600 ring-1 ring-black ring-opacity-5 focus:outline-none animate-in fade-in-50 zoom-in-95 duration-100'>
+                                        <ul
+                                            className='py-2 max-h-60 overflow-auto'
+                                            role='listbox'
+                                            aria-labelledby='location-dropdown'
+                                        >
+                                            {locations.map((location) => (
+                                                <li
+                                                    key={location}
+                                                    className={`flex items-center px-4 py-2 text-base cursor-pointer dark:hover:bg-gray-400 hover:bg-gray-200 ${
+                                                        location === selectedLocation
+                                                            ? 'text-teal-600 font-medium'
+                                                            : 'text-gray-900 dark:text-white'
+                                                    }`}
+                                                    role='option'
+                                                    aria-selected={location === selectedLocation}
+                                                    onClick={() => {
+                                                        setSelectedLocation(location);
+                                                        toggleDropdown();
+                                                    }}
+                                                >
+                                                    <MapPin className='mr-2 h-4 w-4' />
+                                                    {location}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </span>
+                            ? Halal Tak makes it simple to find trusted, Halal-certified spots in
+                            the area.
                         </p>
                     </div>
                     <form className='max-w-md mx-auto ' onSubmit={handleSearchSubmit}>
@@ -102,7 +171,7 @@ export function MainSection(props) {
                                     autoComplete='off'
                                     id='search'
                                     className='block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500'
-                                    placeholder='Search dining...'
+                                    placeholder={`Search dining in ${selectedLocation}..`}
                                     value={searchTerm}
                                     onChange={handleSearchOnChange}
                                     onKeyDown={handleKeyDown}
@@ -123,7 +192,9 @@ export function MainSection(props) {
                                                     (suggestionRefs.current[index] = element)
                                                 }
                                                 className={`p-2 cursor-pointer text-left ${
-                                                    index === selectedIndex ? 'bg-gray-200' : ''
+                                                    index === selectedIndex
+                                                        ? 'dark:bg-gray-400 bg-gray-200'
+                                                        : ''
                                                 }`}
                                                 onClick={() => handleSelect(suggestion.Name)}
                                             >
@@ -151,4 +222,6 @@ MainSection.propTypes = {
     searchSuggestion: PropTypes.array.isRequired,
     isLoading: PropTypes.bool.isRequired,
     isError: PropTypes.bool.isRequired,
+    setSelectedLocation: PropTypes.func.isRequired,
+    selectedLocation: PropTypes.string.isRequired,
 };

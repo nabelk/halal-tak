@@ -10,6 +10,7 @@ import Error500 from './500';
 import Loading from './loading';
 
 function Homepage() {
+    const [selectedLocation, setSelectedLocation] = useState('KLCC');
     const [diningList, setDiningList] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchSuggestion, setSearchSuggestion] = useState([]);
@@ -20,8 +21,8 @@ function Homepage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const fetchData = (token) => {
-        fetch('/api/data/KLCC', {
+    const fetchData = (token, selectedLocation) => {
+        fetch(`/api/data/${selectedLocation}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -46,17 +47,21 @@ function Homepage() {
     };
 
     useEffect(() => {
+        setLoading(true);
+        setSearchTerm('');
+        setSearchSuggestion([]);
+        setSelectedIndex(-1);
         fetch('/api/token', { method: 'GET' })
             .then((res) => res.json())
             .then((data) => {
                 const token = data.token;
 
-                return fetchData(token);
+                return fetchData(token, selectedLocation);
             })
             .catch(() => {
                 setError(true);
             });
-    }, []);
+    }, [selectedLocation]);
 
     const handleModalVisibility = (bool) => setOpenModal(bool);
     const handleTCModalVIsibility = (bool) => setOpenTCMOdal(bool);
@@ -151,6 +156,8 @@ function Homepage() {
                     searchSuggestion={searchSuggestion}
                     isLoading={loading}
                     isError={error}
+                    selectedLocation={selectedLocation}
+                    setSelectedLocation={setSelectedLocation}
                 ></MainSection>
                 <TCModal
                     tcModalCurState={openTCModal}
