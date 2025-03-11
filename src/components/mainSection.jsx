@@ -88,7 +88,7 @@ export function MainSection(props) {
                             Tak <br />
                         </h1>
                         <p className='text-normal text-xl md:text-2xl pt-3 md:pt-6 font-medium'>
-                            Looking for Halal dining at{' '}
+                            Looking for Halal dining in{' '}
                             <span className='relative inline-block mr-1' ref={dropdownRef}>
                                 <button
                                     onClick={toggleDropdown}
@@ -134,8 +134,8 @@ export function MainSection(props) {
                                     </div>
                                 )}
                             </span>
-                            ? Halal Tak makes it simple to find trusted, Halal-certified spots in
-                            the area.
+                            ? Halal Tak makes it easy to find trusted, Halal-certified places
+                            whenever you are.
                         </p>
                     </div>
                     <form className='max-w-md mx-auto ' onSubmit={handleSearchSubmit}>
