@@ -10,6 +10,7 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 RUN bun run build
 
 FROM oven/bun:1-slim AS runner
