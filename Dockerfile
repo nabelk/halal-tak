@@ -1,25 +1,29 @@
-# ---- Build stage ----
-FROM oven/bun:1 AS build
+
+# Build stage
+FROM oven/bun:1 AS builder
 
 WORKDIR /app
 
-COPY bun.lockb package.json ./
+COPY package.json bun.lockb* ./
+
 RUN bun install --frozen-lockfile
 
 COPY . .
 
 RUN bun run build
 
-# ---- Runtime stage ----
-FROM oven/bun:1-slim AS runtime
+FROM oven/bun:1-slim AS runner
+
 WORKDIR /app
 
-COPY --from=build /app ./
+COPY package.json bun.lockb* ./
 
-# Environment
-ENV NODE_ENV=production
-ENV PORT=3000
+RUN bun install --production --frozen-lockfile
+
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
 
-# Start SSR server (adjust path if needed)
-CMD ["bun", "api/server.js"]
+ENV NODE_ENV=production
+
+CMD ["bun", "run", "api/server.js"]
