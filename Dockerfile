@@ -1,31 +1,25 @@
-# ====== BUILD STAGE ======
-FROM node:lts-alpine AS builder
-
+# ---- Build stage ----
+FROM oven/bun:1 AS build
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm ci
+COPY bun.lockb package.json ./
+RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN npm run build
+RUN bun run build
 
-# ====== RUNTIME STAGE ======
-FROM node:lts-alpine AS runtime
-
-
+# ---- Runtime stage ----
+FROM oven/bun:1-slim AS runtime
 WORKDIR /app
 
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/api ./api
+COPY --from=build /app ./
 
+# Environment
 ENV NODE_ENV=production
 ENV PORT=3000
-
 EXPOSE 3000
 
-CMD ["node", "api/server.js"]
+# Start SSR server (adjust path if needed)
+CMD ["bun", "api/server.js"]
