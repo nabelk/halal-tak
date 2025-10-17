@@ -22,6 +22,7 @@ COPY package.json bun.lockb* ./
 RUN bun install --production --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/api ./api
 
 EXPOSE 3000
 
