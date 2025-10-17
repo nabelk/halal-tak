@@ -117,4 +117,6 @@ app.use('*', async (req, res) => {
 });
 
 // Start http server
-app.listen(port);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running at port ${port}`);
+});

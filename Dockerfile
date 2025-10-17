@@ -23,9 +23,11 @@ RUN bun install --production --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/api ./api
+COPY --from=builder /app/src ./src
 
 EXPOSE 3000
 
 ENV NODE_ENV=production
+ENV PORT=3000
 
-CMD ["bun", "run", "api/server.js"]
+CMD ["bun", "api/server.js"]
