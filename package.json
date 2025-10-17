@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "node api/server",
         "build": "npm run build:client && npm run build:server",
+        "build:bun": "bun run build:client && bun run build:server",
         "build:client": "vite build --ssrManifest --outDir dist/client",
         "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
         "serve": "NODE_ENV=production node api/server",
