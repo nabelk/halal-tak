@@ -3,8 +3,6 @@ import fs from 'node:fs/promises';
 import express from 'express';
 import path from 'node:path';
 import axios from 'axios';
-import cors from 'cors';
-import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { generateToken, verifyToken } from '../src/utils/token.js';
 import { fileURLToPath } from 'url';
@@ -60,35 +58,57 @@ if (!isProduction) {
     app.use(base, sirv('./dist/client', { extensions: [] }));
 }
 
+const isAuthorizedAccess = (req, res, next) => {
+    const origin = req.headers.origin || req.headers.referer;
+    const allowedOrigins = [process.env.CLIENT_URL];
+
+    // Check for actual requests (not OPTIONS)
+    if (req.method !== 'OPTIONS' && req.headers['sec-fetch-mode'] !== 'cors') {
+        if (!origin || !allowedOrigins.some((allowed) => origin.startsWith(allowed))) {
+            return res.status(403).json({ error: 'Unauthorized access. No direct call allowed' });
+        }
+    }
+
+    next();
+};
+
 // Route to generate token for fetch api
-app.get('/api/token', rateLimitConfig, (req, res) => {
+app.get('/api/token', isAuthorizedAccess, rateLimitConfig, (req, res) => {
     const token = generateToken(req);
     res.json(token);
 });
 
 // Api route for getting data
-app.get('/api/data/:location', verifyToken, rateLimitConfig, async (req, res) => {
-    const { location } = req.params;
+app.get(
+    '/api/data/:location',
+    isAuthorizedAccess,
+    verifyToken,
+    rateLimitConfig,
+    async (req, res) => {
+        const { location } = req.params;
 
-    const fetchData = async (url, delay = 1000, count = 1) => {
+        const fetchData = async (url, delay = 1000, count = 1) => {
+            try {
+                const response = await axios(url);
+                return response.data.values;
+            } catch (err) {
+                if (count === 5) throw err;
+                console.log('Fetch failed, retrying...');
+                await new Promise((res) => setTimeout(res, delay));
+                return fetchData(url, delay, count + 1);
+            }
+        };
+
         try {
-            const response = await axios(url);
-            return response.data.values;
-        } catch (err) {
-            if (count === 5) throw err;
-            console.log('Fetch failed, retrying...');
-            await new Promise((res) => setTimeout(res, delay));
-            return fetchData(url, delay, count + 1);
+            const data = await fetchData(
+                `${process.env.URL}${location}?key=${process.env.SECRET_KEY}`,
+            );
+            res.json(data);
+        } catch {
+            res.status(500).json({ error: 'Error fetching data' });
         }
-    };
-
-    try {
-        const data = await fetchData(`${process.env.URL}${location}?key=${process.env.SECRET_KEY}`);
-        res.json(data);
-    } catch {
-        res.status(500).json({ error: 'Error fetching data' });
-    }
-});
+    },
+);
 
 // Serve HTML
 app.use('*', async (req, res) => {
