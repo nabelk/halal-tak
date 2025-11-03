@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import express from 'express';
 import path from 'node:path';
 import axios from 'axios';
-import { rateLimit } from 'express-rate-limit';
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit';
 import { generateToken, verifyToken } from '../src/utils/token.js';
 import { fileURLToPath } from 'url';
 
@@ -20,10 +20,35 @@ const ssrManifest = isProduction
 
 // Create http server
 const app = express();
-app.set('trust proxy', true);
 const rateLimitConfig = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: { keyGeneratorIpFallback: false },
+    keyGenerator: (req) => {
+        const cfIp = req.headers['cf-connecting-ip'];
+        if (typeof cfIp === 'string') {
+            console.log(`[Rate Limit] CF-IP: ${cfIp}`);
+            return cfIp;
+        }
+
+        const xForwardedFor = req.headers['x-forwarded-for'];
+        if (typeof xForwardedFor === 'string') {
+            const ip = xForwardedFor.split(',')[0].trim();
+            console.log(`[Rate Limit] X-Forwarded-For: ${ip}`);
+            return ip;
+        }
+        if (Array.isArray(xForwardedFor) && xForwardedFor[0]) {
+            const ip = xForwardedFor[0].split(',')[0].trim();
+            console.log(`[Rate Limit] X-Forwarded-For (array): ${ip}`);
+            return ip;
+        }
+
+        const fallbackIp = ipKeyGenerator(req.ip || 'unknown');
+        console.log(`[Rate Limit] Fallback IP: ${fallbackIp}`);
+        return fallbackIp;
+    },
 });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

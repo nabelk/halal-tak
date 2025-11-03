@@ -21,7 +21,7 @@
         "cross-env": "^7.0.3",
         "dotenv": "^16.4.5",
         "express": "^4.21.1",
-        "express-rate-limit": "^7.4.1",
+        "express-rate-limit": "^8.2.1",
         "flowbite": "^2.5.2",
         "flowbite-react": "^0.10.2",
         "helmet": "^8.0.0",
