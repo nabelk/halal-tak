@@ -20,6 +20,7 @@ const ssrManifest = isProduction
 
 // Create http server
 const app = express();
+app.set('trust proxy', true);
 const rateLimitConfig = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
